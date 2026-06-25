@@ -1,0 +1,221 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:#dcdcdc;
+    font-family:Arial, Helvetica, sans-serif;
+    padding:20px;
+}
+
+
+.top-info{
+    font-size:14px;
+    margin-bottom:20px;
+}
+
+.title-zone{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom:20px;
+}
+
+.left-title{
+    font-size:16px;
+    line-height:30px;
+}
+
+.right-title{
+    text-align:center;
+    flex:1;
+}
+
+.right-title h1{
+    font-size:18px;
+    margin-bottom:10px;
+}
+
+.right-title h2{
+    font-size:20px;
+}
+
+table{
+    table-layout:fixed;
+}
+
+.page{
+    width:100%;
+    max-width:1500px;
+    margin:auto;
+    background:white;
+    padding:20px;
+}
+
+.modules-table td,
+.modules-table th,
+.planning-table td,
+.planning-table th{
+    font-size:11px;
+    padding:4px;
+}
+
+.modules-table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+}
+
+.modules-table th,
+.modules-table td{
+    border:1px solid black;
+    text-align:center;
+}
+
+.modules-table th{
+    background:#efefef;
+}
+@page{
+    size: landscape;
+    margin: 10mm;
+    }
+    .page{
+    page-break-after:avoid;
+}
+    
+
+
+@media print{
+
+    .print-actions{
+        display:none;
+    }
+
+    body{
+        background:white;
+        padding:0;
+    }
+
+    .page{
+        width:100%;
+        max-width:100%;
+        padding:10px;
+    }
+    .modules-table td,
+    .modules-table th,
+    .planning-table td,
+    .planning-table th,
+    .weeks-table td,
+    .weeks-table th{
+        font-size:9px;
+        padding:3px;
+}
+}
+.planning-table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:25px;
+}
+
+.planning-table th,
+.planning-table td{
+    border:1px solid black;
+    text-align:center;
+    padding:6px;
+    font-size:12px;
+    height:42px;
+}
+
+.module-col{
+    width:120px;
+}
+
+.module-name{
+    font-weight:bold;
+    background:#f3f3f3;
+}
+
+.planning-table th{
+    background:#efefef;
+}
+
+.planning-table td{
+    min-width:40px;
+}
+.weeks-title{
+    text-align:center;
+    font-size:18px;
+    font-weight:bold;
+    margin-top:30px;
+    margin-bottom:10px;
+}
+
+.weeks-table{
+    width:100%;
+    border-collapse:collapse;
+    margin-bottom:20px;
+}
+
+.weeks-table th,
+.weeks-table td{
+    border:1px solid black;
+    text-align:center;
+    padding:5px;
+    font-size:11px;
+}
+.signature-zone{
+    display:flex;
+    justify-content:space-between;
+    margin-top:20px;
+}
+
+.signature-box{
+    width:300px;
+    height:120px;
+    border:1px solid black;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    padding-top:15px;
+    font-size:16px;
+    font-weight:bold;
+}
+.print-actions{
+    text-align:right;
+    margin-bottom:15px;
+}
+
+.print-actions button{
+    background:#1e3a8a;
+    color:white;
+    border:none;
+    padding:12px 20px;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:15px;
+}
+
+.print-actions button:hover{
+    background:#162d68;
+}
+
+@media print{
+
+    .print-actions{
+        display:none;
+    }
+
+}
+@media print {
+    button,
+    .btn,
+    .print-btn,
+    .no-print {
+        display: none !important;
+    }
+    .print-actions {
+        display: none !important;
+    }
+}

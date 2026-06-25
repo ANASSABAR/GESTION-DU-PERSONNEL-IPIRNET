@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script>
+if (!localStorage.getItem('token') && !sessionStorage.getItem('token')) {
+  window.location.href = '/login.html';
+}
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Livret Individuel</title>
+
+<link rel="stylesheet" href="/fiches/livret.css?v=99">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/fiches/editor.css">
+</head>
+<body>
+
+<div class="page">
+
+<button class="print-btn no-print" onclick="window.print()">
+Imprimer le Livret
+</button>
+
+
+
+
+<table class="header">
+<tr>
+
+<td width="20%">
+<img src="/assets/logo-ipirnet.png" class="logo">
+</td>
+
+<td>
+<h1>GROUPE IPIRNET</h1>
+
+
+
+
+<p>
+Institut Privé d’Informatique Réseau et Nouvelles
+Etude de Télécommunication
+</p>
+
+<p>
+Autorisé par l’Etat sous N° : 3/03/2/2003
+</p>
+</td>
+
+<td width="20%">
+<img src="/assets/logo-accreditation.png" class="logo">
+</td>
+
+</tr>
+</table>
+
+
+<h1 class="title">
+LIVRET INDIVIDUEL
+</h1>
+
+<table>
+
+<tr>
+    <th>Nom Complet</th>
+    <td>Safir Khalid</td>
+</tr>
+
+<tr>
+    <th>Filière</th>
+    <td>Technicien Spécialisé en Développement Informatique</td>
+</tr>
+
+<tr>
+    <th>Niveau</th>
+    <td>2ème Année</td>
+</tr>
+
+<tr>
+    <th>Année Formation</th>
+    <td>2024 / 2025</td>
+</tr>
+
+</table>
+
+
+
+
+<h2 class="section-title">
+Modules Étudiés
+</h2>
+
+<table>
+
+<tr>
+    <th>Code</th>
+    <th>Module</th>
+    <th>Masse Horaire</th>
+</tr>
+
+<tr>
+    <td>MF201</td>
+    <td>Programmation Web</td>
+    <td>90H</td>
+</tr>
+
+<tr>
+    <td>MF202</td>
+    <td>Base de Données</td>
+    <td>80H</td>
+</tr>
+
+<tr>
+    <td>MF203</td>
+    <td>Réseaux Informatiques</td>
+    <td>70H</td>
+</tr>
+
+<tr>
+    <td>MF204</td>
+    <td>Développement JavaScript</td>
+    <td>60H</td>
+</tr>
+
+</table>
+
+<div class="signature">
+
+    <div>
+        Le Directeur de l’Établissement
+    </div>
+
+    <div>
+        Signature et Cachet
+    </div>
+
+</div>
+
+</div>
+
+
+
+
+
+
+<script src="/fiches/editor.js"></script>
+</body>
+</html>

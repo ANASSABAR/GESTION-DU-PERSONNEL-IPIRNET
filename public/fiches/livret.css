@@ -1,0 +1,115 @@
+body{
+    font-family: Arial, sans-serif;
+    background:#e5e5e5;
+    margin:0;
+    padding:20px;
+}
+
+.page{
+    width:180mm;
+    margin:auto;
+    background:white;
+    padding:8mm;
+    box-sizing:border-box;
+}
+
+.print-btn{
+    margin-bottom:15px;
+    padding:10px 18px;
+    background:#1f4aa8;
+    color:white;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:14px;
+}
+
+.header{
+    width:100%;
+    border-collapse:collapse;
+    margin-bottom:25px;
+}
+
+.header td{
+    border:1px solid black;
+    text-align:center;
+    padding:10px;
+}
+
+.logo{
+    width:110px;
+    height:auto;
+}
+
+.title{
+    text-align:center;
+    font-size:28px;
+    margin:25px 0;
+    font-weight:bold;
+}
+
+.section-title{
+    margin-top:25px;
+    margin-bottom:15px;
+    font-size:22px;
+    font-weight:bold;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,td{
+    border:1px solid black;
+    padding:8px;
+    font-size:13px;
+}
+
+th{
+    background:#f5f5f5;
+}
+
+.signature{
+    margin-top:50px;
+    display:flex;
+    justify-content:space-between;
+    font-size:15px;
+}
+
+@page{
+    size:A4;
+    margin:5mm;
+}
+
+@media print{
+
+    .print-btn{
+        display:none;
+    }
+
+    body{
+        background:white;
+        padding:0;
+    }
+
+    .page{
+        width:100%;
+        margin:0;
+        padding:5mm;
+        box-shadow:none;
+    }
+
+}
+
+@media print {
+    button,
+    .btn,
+    .print-btn,
+    .no-print {
+        display: none !important;
+    }
+    .print-actions {
+        display: none !important;
+    }
+}

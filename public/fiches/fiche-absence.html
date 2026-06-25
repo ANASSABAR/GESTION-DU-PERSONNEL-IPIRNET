@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script>
+if (!localStorage.getItem('token') && !sessionStorage.getItem('token')) {
+  window.location.href = '/login.html';
+}
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attestation d'Absence - IPIRNET</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #e5e5e5;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
+.page {
+    width: 180mm;
+    margin: auto;
+    background: white;
+    padding: 10mm;
+    box-sizing: border-box;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    position: relative;
+}
+.print-actions {
+    width: 180mm;
+    margin: 0 auto 15px auto;
+    text-align: right;
+}
+.print-btn {
+    padding: 10px 18px;
+    background: #1f4aa8;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: background 0.2s;
+}
+.print-btn:hover {
+    background: #153982;
+}
+.header-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 25px;
+}
+.header-table td {
+    border: 1px solid #000;
+    text-align: center;
+    padding: 10px;
+    vertical-align: middle;
+}
+.logo {
+    width: 110px;
+    height: auto;
+}
+.header-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0;
+}
+.header-sub {
+    font-size: 11px;
+    margin: 5px 0 0 0;
+    line-height: 1.4;
+}
+.title-fiche {
+    text-align: center;
+    font-size: 22px;
+    margin: 30px 0;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #000;
+    padding-bottom: 8px;
+}
+.section-title {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #1f4aa8;
+    border-bottom: 1px solid #1f4aa8;
+    padding-bottom: 3px;
+}
+table.info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 25px;
+}
+table.info-table th, table.info-table td {
+    border: 1px solid #ccc;
+    padding: 12px 15px;
+    font-size: 13px;
+    text-align: left;
+}
+table.info-table th {
+    background: #f7f7f7;
+    width: 35%;
+    font-weight: bold;
+}
+.print-date {
+    margin-top: 40px;
+    font-size: 12px;
+    text-align: right;
+    font-style: italic;
+}
+.signature-area {
+    margin-top: 50px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+}
+.signature-box {
+    width: 200px;
+    text-align: center;
+}
+.signature-title {
+    font-weight: bold;
+    margin-bottom: 60px;
+}
+.signature-note {
+    font-size: 11px;
+    color: #666;
+    border-top: 1px dashed #ccc;
+    padding-top: 5px;
+}
+@page {
+    size: A4;
+    margin: 10mm;
+}
+@media print {
+    button,
+    .btn,
+    .print-btn,
+    .no-print {
+        display: none !important;
+    }
+    .print-actions {
+        display: none !important;
+    }
+    body {
+        background: white;
+        padding: 0;
+    }
+    .page {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="print-actions">
+    <button class="print-btn no-print" onclick="doPrint()">
+        Imprimer l'Attestation
+    </button>
+</div>
+
+<div class="page">
+    <!-- HEADER -->
+    <table class="header-table">
+        <tr>
+            <td width="20%">
+                <img src="/assets/logo-ipirnet.png" class="logo" alt="Logo IPIRNET">
+            </td>
+            <td>
+                <h1 class="header-title">GROUPE IPIRNET</h1>
+                <p class="header-sub">
+                    Institut Privé d’Informatique Réseau et Nouvelles Technologies<br>
+                    Autorisé par l’Etat sous N° : 3/03/2/2003
+                </p>
+            </td>
+            <td width="20%">
+                <img src="/assets/Logo-accreditation.png" class="logo" alt="Logo Accréditation">
+            </td>
+        </tr>
+    </table>
+
+    <div class="title-fiche">
+        Attestation d'Absence / Congé
+    </div>
+
+    <div class="section-title">Détails de l'Absence</div>
+    <table class="info-table">
+        <tr>
+            <th>Personnel</th>
+            <td id="val-nom-complet">-</td>
+        </tr>
+        <tr>
+            <th>Motif</th>
+            <td id="val-motif">-</td>
+        </tr>
+        <tr>
+            <th>Date début</th>
+            <td id="val-debut">-</td>
+        </tr>
+        <tr>
+            <th>Date fin</th>
+            <td id="val-fin">-</td>
+        </tr>
+        <tr>
+            <th>Nombre de jours</th>
+            <td id="val-jours">-</td>
+        </tr>
+        <tr>
+            <th>Statut</th>
+            <td id="val-statut">-</td>
+        </tr>
+    </table>
+
+    <div class="section-title">Déclaration</div>
+    <p id="val-declaration" style="font-size: 14px; line-height: 1.6; margin-bottom: 25px; text-align: justify; padding: 10px; background: #f9f9f9; border-left: 4px solid #1f4aa8;">-</p>
+
+    <div class="print-date">
+        Attestation éditée le <span id="val-print-date">-</span>
+    </div>
+
+    <div class="signature-area">
+        <div class="signature-box">
+            <div class="signature-title">L'Intéressé(e)</div>
+            <div class="signature-note">Signature de l'employé</div>
+        </div>
+        <div class="signature-box">
+            <div class="signature-title">Le Directeur de l'Établissement</div>
+            <div class="signature-note">Signature et Cachet</div>
+        </div>
+    </div>
+</div>
+
+<script>
+const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+const params = new URLSearchParams(window.location.search);
+const id_absence = params.get('id_absence') || params.get('id');
+const doc_id = params.get('doc_id');
+let currentIdPersonnel = null;
+
+function fmtDate(iso) {
+  if (!iso) return '-';
+  const parts = iso.split('T')[0].split('-');
+  if (parts.length !== 3) return iso;
+  return `${parts[2]}/${parts[1]}/${parts[0]}`;
+}
+
+function populateAbsence(a) {
+  if (!a) throw new Error('Absence introuvable');
+  
+  currentIdPersonnel = a.id_personnel || null;
+  document.getElementById('val-nom-complet').textContent = a.nom_complet || '-';
+  document.getElementById('val-motif').textContent = a.motif || '-';
+  
+  document.getElementById('val-debut').textContent = fmtDate(a.date_debut);
+  document.getElementById('val-fin').textContent = fmtDate(a.date_fin);
+  document.getElementById('val-statut').textContent = a.statut || '-';
+  
+  // Calcul du nombre de jours
+  let dureeTexte = '-';
+  if (a.nombre_jours && a.nombre_jours > 0) {
+    dureeTexte = `${a.nombre_jours} jour(s)`;
+  } else if (a.date_debut && a.date_fin) {
+    const d1 = new Date(a.date_debut);
+    const d2 = new Date(a.date_fin);
+    const diffTime = Math.abs(d2 - d1);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    dureeTexte = `${diffDays} jour(s)`;
+  }
+  document.getElementById('val-jours').textContent = dureeTexte;
+
+  // Paragraphe explicatif
+  const nom = a.nom_complet || 'Non spécifié';
+  const dd = fmtDate(a.date_debut);
+  const df = fmtDate(a.date_fin);
+  const motif = (a.motif && a.motif.trim() !== '') ? a.motif : 'raisons non spécifiées';
+  
+  const textDecl = `Nous attestons que M. <strong>${nom}</strong> a été absent du <strong>${dd}</strong> au <strong>${df}</strong> pour motif : <em>"${motif}"</em>.`;
+  
+  document.getElementById('val-declaration').innerHTML = textDecl;
+}
+
+if (doc_id) {
+  fetch(`/api/documents/absence/${doc_id}`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
+  .then(res => {
+    if (!res.ok) throw new Error('Erreur de chargement depuis le document');
+    return res.json();
+  })
+  .then(a => {
+    populateAbsence(a);
+  })
+  .catch(err => {
+    console.error(err);
+    document.body.innerHTML = "<h2 style='text-align:center;color:red;margin-top:50px;'>Aucune absence liée à ce document.</h2>";
+  });
+} else if (id_absence) {
+  fetch(`/api/absences/${id_absence}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  })
+  .then(res => {
+    if (!res.ok) throw new Error('Erreur de chargement');
+    return res.json();
+  })
+  .then(a => {
+    if (!a) {
+        document.body.innerHTML = "<h2 style='text-align:center;color:red;margin-top:50px;'>Aucune absence liée à ce document.</h2>";
+        throw new Error('Absence non trouvée');
+    }
+    populateAbsence(a);
+  })
+  .catch(err => {
+    console.error(err);
+  });
+} else {
+    document.body.innerHTML = "<h2 style='text-align:center;color:red;margin-top:50px;'>Aucune absence liée à ce document.</h2>";
+}
+
+document.getElementById('val-print-date').textContent = new Date().toLocaleDateString('fr-FR');
+
+function doPrint() { window.print(); }
+</script>
+</body>
+</html>
+

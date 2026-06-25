@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script>
+if (!localStorage.getItem('token') && !sessionStorage.getItem('token')) {
+  window.location.href = '/login.html';
+}
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fiche d'Évaluation - IPIRNET</title>
+  <link rel="stylesheet" href="/dialogs.css">
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #e5e5e5;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
+.page {
+    width: 180mm;
+    margin: auto;
+    background: white;
+    padding: 10mm;
+    box-sizing: border-box;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    position: relative;
+}
+.print-actions {
+    width: 180mm;
+    margin: 0 auto 15px auto;
+    text-align: right;
+}
+.print-btn {
+    padding: 10px 18px;
+    background: #1f4aa8;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: background 0.2s;
+}
+.print-btn:hover {
+    background: #153982;
+}
+.header-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 25px;
+}
+.header-table td {
+    border: 1px solid #000;
+    text-align: center;
+    padding: 10px;
+    vertical-align: middle;
+}
+.logo {
+    width: 110px;
+    height: auto;
+}
+.header-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0;
+}
+.header-sub {
+    font-size: 11px;
+    margin: 5px 0 0 0;
+    line-height: 1.4;
+}
+.title-fiche {
+    text-align: center;
+    font-size: 22px;
+    margin: 30px 0;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #000;
+    padding-bottom: 8px;
+}
+.section-title {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #1f4aa8;
+    border-bottom: 1px solid #1f4aa8;
+    padding-bottom: 3px;
+}
+table.info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 25px;
+}
+table.info-table th, table.info-table td {
+    border: 1px solid #ccc;
+    padding: 12px 15px;
+    font-size: 13px;
+    text-align: left;
+}
+table.info-table th {
+    background: #f7f7f7;
+    width: 35%;
+    font-weight: bold;
+}
+.print-date {
+    margin-top: 40px;
+    font-size: 12px;
+    text-align: right;
+    font-style: italic;
+}
+.signature-area {
+    margin-top: 50px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+}
+.signature-box {
+    width: 200px;
+    text-align: center;
+}
+.signature-title {
+    font-weight: bold;
+    margin-bottom: 60px;
+}
+.signature-note {
+    font-size: 11px;
+    color: #666;
+    border-top: 1px dashed #ccc;
+    padding-top: 5px;
+}
+@page {
+    size: A4;
+    margin: 10mm;
+}
+@media print {
+    button,
+    .btn,
+    .print-btn,
+    .no-print {
+        display: none !important;
+    }
+    .print-actions {
+        display: none !important;
+    }
+    body {
+        background: white;
+        padding: 0;
+    }
+    .page {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="print-actions">
+    <button class="print-btn no-print" onclick="doPrint()">
+        Imprimer la Fiche
+    </button>
+</div>
+
+<div class="page">
+    <!-- HEADER -->
+    <table class="header-table">
+        <tr>
+            <td width="20%">
+                <img src="/assets/logo-ipirnet.png" class="logo" alt="Logo IPIRNET">
+            </td>
+            <td>
+                <h1 class="header-title">GROUPE IPIRNET</h1>
+                <p class="header-sub">
+                    Institut Privé d’Informatique Réseau et Nouvelles Technologies<br>
+                    Autorisé par l’Etat sous N° : 3/03/2/2003
+                </p>
+            </td>
+            <td width="20%">
+                <img src="/assets/Logo-accreditation.png" class="logo" alt="Logo Accréditation">
+            </td>
+        </tr>
+    </table>
+
+    <div class="title-fiche">
+        Fiche d'Évaluation de Rendement
+    </div>
+
+    <div class="section-title">Évaluation Individuelle</div>
+    <table class="info-table">
+        <tr>
+            <th>Personnel</th>
+            <td id="val-nom-complet">-</td>
+        </tr>
+        <tr>
+            <th>Date d'évaluation</th>
+            <td id="val-date">-</td>
+        </tr>
+        <tr>
+            <th>Note obtenue</th>
+            <td id="val-note" style="font-weight: bold;">-</td>
+        </tr>
+        <tr>
+            <th>Résultat</th>
+            <td id="val-resultat" style="font-weight: bold;">-</td>
+        </tr>
+        <tr>
+            <th>Commentaires / Appréciation</th>
+            <td id="val-commentaire">-</td>
+        </tr>
+    </table>
+
+    <div class="print-date">
+        Fiche d'évaluation éditée le <span id="val-print-date">-</span>
+    </div>
+
+    <div class="signature-area">
+        <div class="signature-box">
+            <div class="signature-title">L'Évaluateur</div>
+            <div class="signature-note">Signature du responsable</div>
+        </div>
+        <div class="signature-box">
+            <div class="signature-title">Le Directeur de l'Établissement</div>
+            <div class="signature-note">Signature et Cachet</div>
+        </div>
+    </div>
+</div>
+
+<script>
+const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+const params = new URLSearchParams(window.location.search);
+const id = params.get('id');
+const id_personnel = params.get('id_personnel');
+let currentIdPersonnel = null;
+
+function fmtDate(iso) {
+  if (!iso) return '-';
+  const parts = iso.split('T')[0].split('-');
+  if (parts.length !== 3) return iso;
+  return `${parts[2]}/${parts[1]}/${parts[0]}`;
+}
+
+if (id || id_personnel) {
+  let apiUrl = '/api/evaluations';
+  if (id_personnel) {
+    apiUrl += `?id_personnel=${id_personnel}&limit=1`;
+  }
+  
+  fetch(apiUrl, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  })
+  .then(res => {
+    if (!res.ok) throw new Error('Erreur de chargement');
+    return res.json();
+  })
+  .then(rows => {
+    let e = null;
+    if (id) {
+      e = rows.find(x => x.id_evaluation == id);
+    } else if (id_personnel && rows.length > 0) {
+      e = rows[0];
+    }
+    
+    if (!e) throw new Error('Évaluation introuvable');
+    
+    currentIdPersonnel = e.id_personnel || null;
+    document.getElementById('val-nom-complet').textContent = e.nom_complet || '-';
+    document.getElementById('val-date').textContent = fmtDate(e.date_evaluation);
+    
+    const note = parseFloat(e.note || 0);
+    document.getElementById('val-note').textContent = `${note.toFixed(2)} / 20.00`;
+    
+    const resText = note >= 10 ? 'Favorable (Admis)' : 'À améliorer (Ajourné)';
+    const resColor = note >= 10 ? '#22c55e' : '#ef4444';
+    const resEl = document.getElementById('val-resultat');
+    resEl.textContent = resText;
+    resEl.style.color = resColor;
+    
+    document.getElementById('val-commentaire').textContent = e.commentaire || '-';
+  })
+  .catch(err => {
+    console.error(err);
+    alert("Impossible de charger les données de l'évaluation.");
+  });
+}
+
+document.getElementById('val-print-date').textContent = new Date().toLocaleDateString('fr-FR');
+
+function doPrint() { window.print(); }
+</script>
+<script src="/dialogs.js"></script>
+</body>
+</html>
+

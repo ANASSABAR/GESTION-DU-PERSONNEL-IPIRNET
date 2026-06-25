@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>IPIRNET — Connexion</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+<style>
+/* Reset & Vars */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:       #0f1117;
+  --surface:  #181c27;
+  --card:     rgba(30, 35, 51, 0.7); /* translucide pour glassmorphism */
+  --border:   rgba(42, 47, 69, 0.6);
+  --accent:   #4f8ef7;
+  --accent2:  #7c5cfc;
+  --success:  #22c55e;
+  --danger:   #ef4444;
+  --text:     #e8eaf0;
+  --muted:    #7a8099;
+  --radius:   14px;
+}
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Background animated glow */
+.glow-bg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+  opacity: 0.12;
+  transform: translate(-50%, -50%);
+  filter: blur(80px);
+  pointer-events: none;
+  animation: glowMove 8s infinite alternate ease-in-out;
+}
+.glow-bg-2 {
+  position: absolute;
+  top: 30%;
+  left: 70%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, var(--accent2) 0%, transparent 70%);
+  opacity: 0.1;
+  filter: blur(80px);
+  pointer-events: none;
+  animation: glowMove2 10s infinite alternate ease-in-out;
+}
+@keyframes glowMove {
+  0% { transform: translate(-40%, -60%) scale(1); }
+  100% { transform: translate(-60%, -40%) scale(1.2); }
+}
+@keyframes glowMove2 {
+  0% { transform: translate(-10%, -20%) scale(1.1); }
+  100% { transform: translate(10%, 20%) scale(0.9); }
+}
+
+/* Login Card */
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 40px 32px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  animation: cardFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes cardFadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Header */
+.login-hdr {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.login-logo {
+  font-size: 32px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+.login-hdr h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+}
+.login-hdr p {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Forms */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.form-group label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.input-wrap input {
+  width: 100%;
+  padding: 12px 40px 12px 14px;
+  background: rgba(15, 17, 23, 0.6);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 14px;
+  transition: all 0.2s;
+  outline: none;
+}
+.input-wrap input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(79, 142, 247, 0.2);
+}
+.input-wrap .btn-toggle-pwd {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  outline: none;
+}
+.input-wrap .btn-toggle-pwd:hover {
+  color: var(--text);
+}
+
+/* Actions Row */
+.form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 24px;
+}
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: var(--muted);
+  user-select: none;
+}
+.remember-me input {
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+.forgot-pwd {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.forgot-pwd:hover {
+  color: var(--accent2);
+  text-decoration: underline;
+}
+
+/* Button & Loader */
+.btn-login {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(124, 92, 252, 0.3);
+}
+.btn-login:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(124, 92, 252, 0.4);
+}
+.btn-login:active {
+  transform: translateY(1px);
+}
+.btn-login:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: none;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Alert Error */
+.alert-error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 8px;
+  padding: 12px;
+  color: var(--danger);
+  font-size: 13px;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  animation: shake 0.3s ease;
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+</style>
+</head>
+<body>
+
+<div class="glow-bg"></div>
+<div class="glow-bg-2"></div>
+
+<div class="login-card">
+  <div class="login-hdr">
+    <div class="login-logo">IPIRNET</div>
+    <h2>Gestion du Personnel</h2>
+    <p>Connectez-vous pour accéder au tableau de bord</p>
+  </div>
+
+  <div class="alert-error" id="error-box">
+    <span>⚠️</span>
+    <span id="error-msg">Identifiants incorrects.</span>
+  </div>
+
+  <form id="login-form">
+    <div class="form-group">
+      <label for="email">Adresse e-mail</label>
+      <div class="input-wrap">
+        <input type="email" id="email" placeholder="nom@ipirnet.ma" required autocomplete="username" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="password">Mot de passe</label>
+      <div class="input-wrap">
+        <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password" />
+        <button type="button" class="btn-toggle-pwd" id="btn-toggle-pwd" title="Afficher le mot de passe">
+          <!-- Icône œil (SVG) -->
+          <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <label class="remember-me">
+        <input type="checkbox" id="remember" checked />
+        <span>Se souvenir de moi</span>
+      </label>
+      <a href="#" class="forgot-pwd" onclick="alert('Veuillez contacter votre administrateur système pour réinitialiser votre mot de passe.')">Mot de passe oublié ?</a>
+    </div>
+
+    <button type="submit" class="btn-login" id="btn-submit">
+      <div class="spinner" id="btn-spinner"></div>
+      <span id="btn-text">Se connecter</span>
+    </button>
+  </form>
+</div>
+
+<script>
+// Rediriger si le token est déjà présent
+if (localStorage.getItem('token') || sessionStorage.getItem('token')) {
+  window.location.href = '/';
+}
+
+const form = document.getElementById('login-form');
+const emailInput = document.getElementById('email');
+const pwdInput = document.getElementById('password');
+const btnTogglePwd = document.getElementById('btn-toggle-pwd');
+const eyeIcon = document.getElementById('eye-icon');
+const errorBox = document.getElementById('error-box');
+const errorMsg = document.getElementById('error-msg');
+const btnSubmit = document.getElementById('btn-submit');
+const btnSpinner = document.getElementById('btn-spinner');
+const btnText = document.getElementById('btn-text');
+const rememberCheckbox = document.getElementById('remember');
+
+// Toggle Password Visibility
+btnTogglePwd.addEventListener('click', () => {
+  const isPwd = pwdInput.type === 'password';
+  pwdInput.type = isPwd ? 'text' : 'password';
+  eyeIcon.innerHTML = isPwd 
+    ? `<line x1="1" y1="1" x2="23" y2="23"></line><path d="M9 9a3 3 0 1 1-6 0c0-1.66 1.34-3 3-3"></path><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path><path d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path><line x1="12" y1="12" x2="12.01" y2="12"></line>`
+    : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
+});
+
+// Handle Login
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  // Masquer l'erreur
+  errorBox.style.display = 'none';
+  
+  const email = emailInput.value.trim();
+  const password = pwdInput.value;
+  
+  // Validation simple côté client
+  if (!email || !password) {
+    showError('Veuillez remplir tous les champs.');
+    return;
+  }
+  
+  // Désactiver le bouton et lancer le loader
+  btnSubmit.disabled = true;
+  btnSpinner.style.display = 'block';
+  btnText.textContent = 'Connexion en cours...';
+  
+  try {
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.error || 'Identifiants invalides.');
+    }
+    
+    // Enregistrement du token (Local vs Session)
+    if (rememberCheckbox.checked) {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+    } else {
+      sessionStorage.setItem('token', data.token);
+      sessionStorage.setItem('user', JSON.stringify(data.user));
+    }
+    
+    // Redirection vers le dashboard
+    window.location.href = '/';
+    
+  } catch (err) {
+    showError(err.message);
+  } finally {
+    // Restaurer le bouton
+    btnSubmit.disabled = false;
+    btnSpinner.style.display = 'none';
+    btnText.textContent = 'Se connecter';
+  }
+});
+
+function showError(msg) {
+  errorMsg.textContent = msg;
+  errorBox.style.display = 'flex';
+}
+</script>
+</body>
+</html>

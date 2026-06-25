@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>IPIRNET — Connexion | Système de Gestion du Personnel</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="/dialogs.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+<style>
+/* ── RESET & VARS ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:         #0F172A;
+  --surface:    #1F2937;
+  --card:       rgba(31, 41, 55, 0.85);
+  --border:     rgba(55, 65, 81, 0.8);
+  --accent:     #3B82F6;
+  --accent2:    #7C3AED;
+  --success:    #10B981;
+  --danger:     #EF4444;
+  --text:       #F9FAFB;
+  --muted:      #9CA3AF;
+  --radius:     14px;
+}
+html, body {
+  height: 100%;
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+}
+
+/* ── BACKGROUND ANIMATED ── */
+.bg-animated {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0F172A 0%, #1E1B4B 50%, #0F172A 100%);
+}
+.bg-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.18;
+  animation: orbFloat 12s ease-in-out infinite alternate;
+}
+.bg-orb-1 {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, #3B82F6, transparent 70%);
+  top: -100px; left: -100px;
+  animation-delay: 0s;
+}
+.bg-orb-2 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, #7C3AED, transparent 70%);
+  bottom: -80px; right: -80px;
+  animation-delay: -4s;
+}
+.bg-orb-3 {
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, #1D4ED8, transparent 70%);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  animation-delay: -8s;
+}
+@keyframes orbFloat {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(30px, -30px) scale(1.15); }
+}
+.bg-orb-2 { animation-name: orbFloat2; }
+@keyframes orbFloat2 {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-25px, 25px) scale(1.1); }
+}
+
+/* ── GRID PATTERN OVERLAY ── */
+.bg-grid {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-image: 
+    linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ── LAYOUT ── */
+.login-layout {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  height: 100vh;
+  width: 100%;
+}
+
+/* ── LEFT PANEL ── */
+.left-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 60px;
+  background: linear-gradient(160deg, rgba(29,78,216,0.12) 0%, rgba(124,58,237,0.08) 100%);
+  border-right: 1px solid rgba(59,130,246,0.15);
+  backdrop-filter: blur(4px);
+  animation: panelSlideIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes panelSlideIn {
+  from { opacity: 0; transform: translateX(-30px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Logos area on left panel */
+.left-logos {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 56px;
+  flex-wrap: wrap;
+}
+.left-logos .logo-ipirnet {
+  height: 64px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 16px rgba(59,130,246,0.3));
+  transition: filter 0.3s ease;
+}
+.left-logos .logo-ipirnet:hover {
+  filter: drop-shadow(0 4px 24px rgba(59,130,246,0.5));
+}
+.logos-divider {
+  width: 1px;
+  height: 48px;
+  background: linear-gradient(to bottom, transparent, rgba(59,130,246,0.4), transparent);
+}
+.left-logos .logo-accreditation {
+  height: 52px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(255,255,255,0.1));
+}
+
+.left-heading {
+  margin-bottom: 32px;
+}
+.left-heading .tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(59,130,246,0.12);
+  border: 1px solid rgba(59,130,246,0.3);
+  color: #60A5FA;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  padding: 5px 14px;
+  border-radius: 999px;
+  margin-bottom: 20px;
+}
+.left-heading h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(26px, 3vw, 38px);
+  font-weight: 800;
+  line-height: 1.2;
+  color: #F9FAFB;
+  margin-bottom: 16px;
+}
+.left-heading h1 span {
+  background: linear-gradient(135deg, #60A5FA, #A78BFA);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.left-heading p {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.7;
+  max-width: 420px;
+}
+
+/* Feature list */
+.feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 48px;
+}
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: #D1D5DB;
+}
+.feature-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(59,130,246,0.12);
+  border: 1px solid rgba(59,130,246,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+/* ── RIGHT PANEL ── */
+.right-panel {
+  width: 480px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 48px 40px;
+  backdrop-filter: blur(20px);
+  background: rgba(15, 23, 42, 0.6);
+  animation: cardSlideIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+@keyframes cardSlideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Mobile logo (hidden on desktop) */
+.mobile-logos {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.mobile-logos img { height: 40px; object-fit: contain; }
+
+.card-header {
+  margin-bottom: 36px;
+}
+.card-header h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.card-header p {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ── ALERT ── */
+.alert-error {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  background: rgba(239,68,68,0.08);
+  border: 1px solid rgba(239,68,68,0.25);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #FCA5A5;
+  margin-bottom: 20px;
+  animation: shake 0.3s ease;
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25%       { transform: translateX(-5px); }
+  75%       { transform: translateX(5px); }
+}
+
+/* ── FORM ── */
+.form-group {
+  margin-bottom: 18px;
+}
+.form-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 8px;
+}
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.input-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--muted);
+  font-size: 15px;
+  pointer-events: none;
+}
+.input-wrap input {
+  width: 100%;
+  padding: 12px 44px 12px 44px;
+  background: rgba(31,41,55,0.8);
+  border: 1px solid rgba(55,65,81,0.9);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s ease;
+  outline: none;
+}
+.input-wrap input:focus {
+  border-color: var(--accent);
+  background: rgba(31,41,55,1);
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+}
+.input-wrap input::placeholder { color: #4B5563; }
+.btn-toggle-pwd {
+  position: absolute;
+  right: 14px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  transition: color 0.2s;
+}
+.btn-toggle-pwd:hover { color: var(--text); }
+
+/* ── FORM ACTIONS ── */
+.form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  font-size: 13px;
+}
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: var(--muted);
+  user-select: none;
+}
+.remember-me input {
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.forgot-pwd {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 12px;
+  transition: color 0.2s;
+}
+.forgot-pwd:hover { color: #60A5FA; text-decoration: underline; }
+
+/* ── SUBMIT BUTTON ── */
+.btn-login {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #1D4ED8, #7C3AED);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 20px rgba(29,78,216,0.35), 0 0 0 0 rgba(59,130,246,0);
+  position: relative;
+  overflow: hidden;
+}
+.btn-login::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #2563EB, #8B5CF6);
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.btn-login:hover::before { opacity: 1; }
+.btn-login:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(29,78,216,0.45);
+}
+.btn-login:active { transform: translateY(0); }
+.btn-login:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+.btn-login span, .btn-login .spinner { position: relative; z-index: 1; }
+
+.spinner {
+  width: 17px;
+  height: 17px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+  display: none;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── FOOTER NOTE ── */
+.card-footer {
+  margin-top: 28px;
+  text-align: center;
+  font-size: 11px;
+  color: #4B5563;
+}
+.card-footer strong { color: #6B7280; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .left-panel { display: none; }
+  .right-panel { width: 100%; padding: 40px 28px; }
+  .mobile-logos { display: flex; }
+}
+</style>
+</head>
+<body>
+
+<!-- Background -->
+<div class="bg-animated">
+  <div class="bg-orb bg-orb-1"></div>
+  <div class="bg-orb bg-orb-2"></div>
+  <div class="bg-orb bg-orb-3"></div>
+</div>
+<div class="bg-grid"></div>
+
+<!-- Layout -->
+<div class="login-layout">
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="left-logos">
+      <img src="/assets/logo-ipirnet.png" alt="Logo Groupe IPIRNET" class="logo-ipirnet"/>
+      <div class="logos-divider"></div>
+      <img src="/assets/Logo-accreditation.png" alt="Logo Accréditation" class="logo-accreditation"/>
+    </div>
+
+    <div class="left-heading">
+      <div class="tag">
+        <span>●</span> Système RH Professionnel
+      </div>
+      <h1>IPIRNET<br/><span>Gestion du Personnel</span></h1>
+      <p>Plateforme intégrée de gestion des ressources humaines. Pilotez votre personnel, suivez les absences, gérez les rémunérations et les évaluations en temps réel.</p>
+    </div>
+
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feature-icon">👥</div>
+        <span>Gestion complète du personnel & des catégories</span>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📊</div>
+        <span>Tableau de bord analytique en temps réel</span>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">💰</div>
+        <span>Suivi des rémunérations & heures supplémentaires</span>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📁</div>
+        <span>Gestion documentaire & évaluations</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+    <div class="login-card">
+
+      <!-- Mobile Logos (hidden on desktop) -->
+      <div class="mobile-logos">
+        <img src="/assets/logo-ipirnet.png" alt="IPIRNET"/>
+        <img src="/assets/Logo-accreditation.png" alt="Accréditation"/>
+      </div>
+
+      <div class="card-header">
+        <h2>Connexion</h2>
+        <p>Accédez à votre espace de gestion</p>
+      </div>
+
+      <!-- Error alert -->
+      <div class="alert-error" id="error-box">
+        <span>⚠️</span>
+        <span id="error-msg">Identifiants incorrects.</span>
+      </div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label for="email">Adresse e-mail</label>
+          <div class="input-wrap">
+            <span class="input-icon">✉️</span>
+            <input type="email" id="email" placeholder="nom@ipirnet.ma" required autocomplete="username"/>
+            <div style="width:44px"></div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Mot de passe (CIN)</label>
+          <div class="input-wrap">
+            <span class="input-icon">🔒</span>
+            <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password"/>
+            <button type="button" class="btn-toggle-pwd" id="btn-toggle-pwd" title="Afficher/masquer le mot de passe">
+              <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <label class="remember-me">
+            <input type="checkbox" id="remember" checked/>
+            <span>Se souvenir de moi</span>
+          </label>
+          <a href="#" class="forgot-pwd" onclick="ipirnetAlert('Veuillez contacter votre administrateur système pour réinitialiser votre mot de passe.', 'info')">Mot de passe oublié ?</a>
+        </div>
+
+        <button type="submit" class="btn-login" id="btn-submit">
+          <div class="spinner" id="btn-spinner"></div>
+          <span id="btn-text">Se connecter</span>
+        </button>
+      </form>
+
+      <div class="card-footer">
+        <script src="/dialogs.js"></script>
+        <strong>IPIRNET</strong> — Système de Gestion du Personnel &copy; 2026
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Redirect if already logged in
+if (localStorage.getItem('token') || sessionStorage.getItem('token')) {
+  window.location.href = '/';
+}
+
+const form           = document.getElementById('login-form');
+const emailInput     = document.getElementById('email');
+const pwdInput       = document.getElementById('password');
+const btnTogglePwd   = document.getElementById('btn-toggle-pwd');
+const eyeIcon        = document.getElementById('eye-icon');
+const errorBox       = document.getElementById('error-box');
+const errorMsg       = document.getElementById('error-msg');
+const btnSubmit      = document.getElementById('btn-submit');
+const btnSpinner     = document.getElementById('btn-spinner');
+const btnText        = document.getElementById('btn-text');
+const rememberChk    = document.getElementById('remember');
+
+// Toggle password visibility
+btnTogglePwd.addEventListener('click', () => {
+  const isPwd = pwdInput.type === 'password';
+  pwdInput.type = isPwd ? 'text' : 'password';
+  eyeIcon.innerHTML = isPwd
+    ? `<line x1="1" y1="1" x2="23" y2="23"></line><path d="M9 9a3 3 0 1 1-6 0c0-1.66 1.34-3 3-3"></path><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path><path d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path>`
+    : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
+});
+
+// Handle login
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  errorBox.style.display = 'none';
+
+  const email    = emailInput.value.trim();
+  const password = pwdInput.value;
+
+  if (!email || !password) { showError('Veuillez remplir tous les champs.'); return; }
+
+  btnSubmit.disabled = true;
+  btnSpinner.style.display = 'block';
+  btnText.textContent = 'Connexion en cours...';
+
+  try {
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Identifiants invalides.');
+
+    if (rememberChk.checked) {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+    } else {
+      sessionStorage.setItem('token', data.token);
+      sessionStorage.setItem('user', JSON.stringify(data.user));
+    }
+    window.location.href = '/';
+
+  } catch (err) {
+    showError(err.message);
+  } finally {
+    btnSubmit.disabled = false;
+    btnSpinner.style.display = 'none';
+    btnText.textContent = 'Se connecter';
+  }
+});
+
+function showError(msg) {
+  errorMsg.textContent = msg;
+  errorBox.style.display = 'flex';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   editor.css  –  WYSIWYG toolbar + Autosave indicator
+   IPIRNET Gestion du Personnel
+───────────────────────────────────────────────────────────────────────────── */
+
+/* Hide toolbar and editing UI on print */
+@media print {
+  #wysiwyg-toolbar            { display: none !important; }
+  [contenteditable="true"]    { outline: none !important; }
+  body                        { padding-top: 0 !important; }
+  .no-print                   { display: none !important; }
+}
+
+/* ── Toolbar ─────────────────────────────────────────────────────────────── */
+#wysiwyg-toolbar {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  background: #1e2a3b;
+  border-bottom: 2px solid #3b82f6;
+  padding: 7px 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+  z-index: 9999;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.5);
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.toolbar-group {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.toolbar-separator {
+  width: 1px;
+  height: 26px;
+  background: rgba(255,255,255,0.12);
+  margin: 0 3px;
+}
+
+.toolbar-actions {
+  margin-left: auto;
+  gap: 8px;
+}
+
+/* Buttons & selects */
+#wysiwyg-toolbar button,
+#wysiwyg-toolbar select {
+  padding: 5px 9px;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.07);
+  color: #e2e8f0;
+  border-radius: 5px;
+  font-size: 13px;
+  font-family: inherit;
+  transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+
+#wysiwyg-toolbar button:hover { background: rgba(59,130,246,0.3); border-color: #3b82f6; }
+#wysiwyg-toolbar select option { background: #1e2a3b; color: #e2e8f0; }
+
+#wysiwyg-toolbar .btn-save {
+  background: #3b82f6; color: white; font-weight: 600;
+  border-color: #2563eb; padding: 6px 14px;
+  transition: background 0.2s, transform 0.1s;
+}
+#wysiwyg-toolbar .btn-save:hover  { background: #2563eb; transform: scale(1.03); }
+#wysiwyg-toolbar .btn-save:active { transform: scale(0.97); }
+#wysiwyg-toolbar .btn-save:disabled { background: #475569; cursor: not-allowed; transform: none; }
+
+#wysiwyg-toolbar .btn-print {
+  background: #374151; color: white;
+  border-color: #4b5563; padding: 6px 12px;
+}
+#wysiwyg-toolbar .btn-print:hover { background: #4b5563; }
+
+/* ── Autosave Indicator ──────────────────────────────────────────────────── */
+.autosave-indicator {
+  font-size: 12px;
+  padding: 3px 9px;
+  border-radius: 12px;
+  white-space: nowrap;
+  font-weight: 500;
+  transition: background 0.3s, color 0.3s;
+  letter-spacing: 0.02em;
+}
+
+.as-saved   { background: rgba(16,185,129,0.18); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.3); }
+.as-pending { background: rgba(245,158,11,0.18);  color: #fcd34d; border: 1px solid rgba(245,158,11,0.3); }
+.as-saving  { background: rgba(59,130,246,0.18);  color: #93c5fd; border: 1px solid rgba(59,130,246,0.3); animation: pulse 1s infinite; }
+.as-error   { background: rgba(239,68,68,0.18);   color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+.as-draft   { background: rgba(124,58,237,0.18);  color: #c4b5fd; border: 1px solid rgba(124,58,237,0.3); }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.55; }
+}
+
+/* ── Status message ──────────────────────────────────────────────────────── */
+.editor-status {
+  font-size: 12px;
+  padding: 3px 9px;
+  border-radius: 4px;
+  white-space: nowrap;
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.status-success { background: rgba(16,185,129,0.15); color: #6ee7b7; }
+.status-error   { background: rgba(239,68,68,0.15);  color: #fca5a5; }
+.status-warning { background: rgba(245,158,11,0.15); color: #fcd34d; }
+.status-info    { background: rgba(59,130,246,0.15); color: #93c5fd; }
+
+/* ── Body offset ─────────────────────────────────────────────────────────── */
+body { padding-top: 58px !important; }
+
+/* ── Editable zone ───────────────────────────────────────────────────────── */
+[contenteditable="true"] {
+  outline: 2px dashed transparent;
+  transition: outline-color 0.2s;
+  min-height: 200px;
+}
+[contenteditable="true"]:hover  { outline-color: rgba(59,130,246,0.2); }
+[contenteditable="true"]:focus  { outline-color: rgba(59,130,246,0.5); }

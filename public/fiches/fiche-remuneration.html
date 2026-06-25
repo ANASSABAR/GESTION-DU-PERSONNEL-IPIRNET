@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script>
+if (!localStorage.getItem('token') && !sessionStorage.getItem('token')) {
+  window.location.href = '/login.html';
+}
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bulletin de Paie - IPIRNET</title>
+<link rel="stylesheet" href="/dialogs.css">
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #e5e5e5;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
+.page {
+    width: 180mm;
+    margin: auto;
+    background: white;
+    padding: 10mm;
+    box-sizing: border-box;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    position: relative;
+}
+.print-actions {
+    width: 180mm;
+    margin: 0 auto 15px auto;
+    text-align: right;
+}
+.print-btn {
+    padding: 10px 18px;
+    background: #1f4aa8;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: background 0.2s;
+}
+.print-btn:hover {
+    background: #153982;
+}
+/* --- Header standard identique aux autres fiches --- */
+.header-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 25px;
+}
+.header-table td {
+    border: 1px solid #000;
+    text-align: center;
+    padding: 10px;
+    vertical-align: middle;
+}
+.logo {
+    width: 110px;
+    height: auto;
+}
+.header-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0;
+}
+.header-sub {
+    font-size: 11px;
+    margin: 5px 0 0 0;
+    line-height: 1.4;
+}
+/* --- Titre de la fiche --- */
+.title-fiche {
+    text-align: center;
+    font-size: 22px;
+    margin: 25px 0 8px 0;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #000;
+    padding-bottom: 8px;
+}
+.title-periode {
+    text-align: center;
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 20px;
+    font-style: italic;
+}
+/* --- Titres de section --- */
+.section-title {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #1f4aa8;
+    border-bottom: 1px solid #1f4aa8;
+    padding-bottom: 3px;
+}
+/* --- Grille infos employé / paie --- */
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+.info-card {
+    border: 1px solid #ccc;
+}
+.info-card-header {
+    background: #f0f4fb;
+    color: #1f4aa8;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 6px 10px;
+    border-bottom: 1px solid #ccc;
+}
+.info-card-body {
+    padding: 6px 10px;
+    background: #fff;
+}
+.info-row {
+    display: flex;
+    align-items: baseline;
+    padding: 4px 0;
+    border-bottom: 1px solid #eee;
+    gap: 6px;
+}
+.info-row:last-child { border-bottom: none; }
+.info-label {
+    font-size: 11px;
+    color: #555;
+    font-weight: bold;
+    white-space: nowrap;
+    min-width: 115px;
+    flex-shrink: 0;
+}
+.info-value {
+    font-size: 12px;
+    color: #222;
+    flex: 1;
+    word-break: break-word;
+}
+/* --- Tableau de rémunération --- */
+.salary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 18px;
+    font-size: 12px;
+}
+.salary-table thead tr {
+    background: #1f4aa8;
+    color: #fff;
+}
+.salary-table thead th {
+    padding: 8px 10px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 12px;
+    border: 1px solid #163882;
+}
+.salary-table thead th:first-child { text-align: left; }
+.salary-table tbody tr:nth-child(even) { background: #f7f7f7; }
+.salary-table tbody td {
+    padding: 7px 10px;
+    border: 1px solid #ccc;
+    text-align: center;
+    color: #333;
+}
+.salary-table tbody td:first-child {
+    text-align: left;
+    font-weight: bold;
+}
+/* Ligne salaire brut */
+.row-brut td {
+    background: #eef2fb !important;
+    font-weight: bold;
+    color: #1f4aa8 !important;
+    border-top: 2px solid #1f4aa8 !important;
+}
+/* Lignes déduction */
+.row-deduction td {
+    background: #fff8f8 !important;
+    color: #c0392b !important;
+}
+/* Ligne net à payer */
+.row-net td {
+    background: #1f4aa8 !important;
+    color: #ffffff !important;
+    font-weight: bold;
+    font-size: 13px !important;
+    border-top: 2px solid #163882 !important;
+}
+.gains-cell  { color: #1f4aa8; font-weight: bold; }
+.retenues-cell { color: #c0392b; font-weight: bold; }
+/* --- Encadré net à payer --- */
+.net-a-payer-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #1f4aa8;
+    color: #fff;
+    padding: 10px 18px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+.net-a-payer-label { font-size: 13px; font-weight: bold; }
+.net-a-payer-amount {
+    font-size: 18px;
+    font-weight: bold;
+    background: rgba(255,255,255,0.15);
+    border-radius: 3px;
+    padding: 3px 14px;
+}
+/* --- Signatures --- */
+.signature-area {
+    margin-top: 40px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+}
+.signature-box {
+    width: 200px;
+    text-align: center;
+}
+.signature-title {
+    font-weight: bold;
+    margin-bottom: 60px;
+}
+.signature-note {
+    font-size: 11px;
+    color: #666;
+    border-top: 1px dashed #ccc;
+    padding-top: 5px;
+}
+/* --- Pied de page --- */
+.print-date {
+    margin-top: 30px;
+    font-size: 12px;
+    text-align: right;
+    font-style: italic;
+}
+@page { size: A4; margin: 10mm; }
+@media print {
+    button, .btn, .print-btn, .no-print { display: none !important; }
+    .print-actions { display: none !important; }
+    body { background: white; padding: 0; }
+    .page { width: 100%; margin: 0; padding: 0; box-shadow: none; }
+    .salary-table thead tr,
+    .row-brut td,
+    .row-net td,
+    .net-a-payer-box {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
+@media (max-width: 640px) {
+    .page { width: 100%; padding: 10px; }
+    .info-grid { grid-template-columns: 1fr; }
+    .signature-area { flex-direction: column; gap: 20px; }
+    .net-a-payer-box { flex-direction: column; gap: 6px; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<div class="print-actions">
+    <button class="print-btn no-print" onclick="doPrint()">Imprimer le Bulletin</button>
+</div>
+
+<div class="page">
+    <!-- HEADER — identique aux autres fiches -->
+    <table class="header-table">
+        <tr>
+            <td width="20%">
+                <img src="/assets/logo-ipirnet.png" class="logo" alt="Logo IPIRNET">
+            </td>
+            <td>
+                <h1 class="header-title">GROUPE IPIRNET</h1>
+                <p class="header-sub">
+                    Institut Privé d'Informatique Réseau et Nouvelles Technologies<br>
+                    Autorisé par l'Etat sous N° : 3/03/2/2003
+                </p>
+            </td>
+            <td width="20%">
+                <img src="/assets/Logo-accreditation.png" class="logo" alt="Logo Accréditation">
+            </td>
+        </tr>
+    </table>
+
+    <div class="title-fiche">Bulletin de Paie</div>
+    <div class="title-periode">Période du : <span id="val-periode-debut">—</span> au <span id="val-periode-fin">—</span></div>
+
+    <div class="section-title">Informations Employé &amp; Paie</div>
+    <div class="info-grid">
+        <!-- Infos Employé -->
+        <div class="info-card">
+            <div class="info-card-header">Informations Employé</div>
+            <div class="info-card-body">
+                <div class="info-row">
+                    <span class="info-label">Nom complet :</span>
+                    <span class="info-value" id="val-nom-complet">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">CIN :</span>
+                    <span class="info-value" id="val-cin">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Numéro CNSS :</span>
+                    <span class="info-value" id="val-num-cnss">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Matricule :</span>
+                    <span class="info-value" id="val-matricule">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Date d'embauche :</span>
+                    <span class="info-value" id="val-embauche">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Fonction / Statut :</span>
+                    <span class="info-value" id="val-fonction">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Catégorie :</span>
+                    <span class="info-value" id="val-categorie">-</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Infos de Paie -->
+        <div class="info-card">
+            <div class="info-card-header">Informations de Paie</div>
+            <div class="info-card-body">
+                <div class="info-row">
+                    <span class="info-label">Date de paiement :</span>
+                    <span class="info-value" id="val-paiement">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Salaire de base :</span>
+                    <span class="info-value" id="val-base-info">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Prime :</span>
+                    <span class="info-value" id="val-prime-info">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Heures supplémentaires :</span>
+                    <span class="info-value" id="val-nb-hs">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Prix / heure supp. :</span>
+                    <span class="info-value" id="val-prix-hs">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Bulletin édité le :</span>
+                    <span class="info-value" id="val-print-date">-</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-title">Détail des Rémunérations</div>
+
+    <table class="salary-table">
+        <thead>
+            <tr>
+                <th style="width:38%; text-align:left;">Libellé</th>
+                <th style="width:17%;">Base / Nombre</th>
+                <th style="width:12%;">Taux</th>
+                <th style="width:16.5%;">Gains (MAD)</th>
+                <th style="width:16.5%;">Retenues (MAD)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Salaire de base -->
+            <tr>
+                <td>Salaire de base</td>
+                <td id="tbl-base-base">-</td>
+                <td>100%</td>
+                <td class="gains-cell" id="tbl-base-gains">-</td>
+                <td>-</td>
+            </tr>
+            <!-- Prime -->
+            <tr>
+                <td>Prime</td>
+                <td id="tbl-prime-base">-</td>
+                <td>-</td>
+                <td class="gains-cell" id="tbl-prime-gains">-</td>
+                <td>-</td>
+            </tr>
+            <!-- Heures supplémentaires -->
+            <tr>
+                <td>Heures supplémentaires</td>
+                <td id="tbl-hs-base">-</td>
+                <td id="tbl-hs-taux">-</td>
+                <td class="gains-cell" id="tbl-hs-gains">-</td>
+                <td>-</td>
+            </tr>
+            <!-- Salaire brut -->
+            <tr class="row-brut">
+                <td>Salaire Brut</td>
+                <td>-</td>
+                <td>-</td>
+                <td id="tbl-brut-gains">-</td>
+                <td>-</td>
+            </tr>
+            <!-- CNSS -->
+            <tr class="row-deduction">
+                <td>Cotisation CNSS</td>
+                <td>Salaire brut</td>
+                <td>4,48%</td>
+                <td>-</td>
+                <td class="retenues-cell" id="tbl-cnss-ret">-</td>
+            </tr>
+            <!-- AMO -->
+            <tr class="row-deduction">
+                <td>Cotisation AMO</td>
+                <td>Salaire brut</td>
+                <td>2,26%</td>
+                <td>-</td>
+                <td class="retenues-cell" id="tbl-amo-ret">-</td>
+            </tr>
+            <!-- CIMR -->
+            <tr class="row-deduction">
+                <td>CIMR</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td class="retenues-cell" id="tbl-cimr-ret">-</td>
+            </tr>
+            <!-- Salaire Imposable -->
+            <tr style="background-color:#fffdf0; font-weight:bold;">
+                <td>Salaire Imposable</td>
+                <td>-</td>
+                <td>-</td>
+                <td id="tbl-imp-gains">-</td>
+                <td>-</td>
+            </tr>
+            <!-- IR -->
+            <tr class="row-deduction">
+                <td>Impôt sur le Revenu (IR)</td>
+                <td>Salaire Imposable</td>
+                <td>Barème</td>
+                <td>-</td>
+                <td class="retenues-cell" id="tbl-ir-ret">-</td>
+            </tr>
+            <!-- Salaire NET -->
+            <tr class="row-net">
+                <td>NET À PAYER</td>
+                <td colspan="2">-</td>
+                <td id="tbl-net-gains">-</td>
+                <td>-</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Encadré Net à Payer -->
+    <div class="net-a-payer-box">
+        <span class="net-a-payer-label">NET À PAYER AU SALARIÉ</span>
+        <span class="net-a-payer-amount" id="val-net">- MAD</span>
+    </div>
+
+    <div class="print-date">
+        Bulletin édité le <span id="val-print-date">-</span>
+    </div>
+
+    <!-- Signatures -->
+    <div class="signature-area">
+        <div class="signature-box">
+            <div class="signature-title">L'Intéressé(e)</div>
+            <div class="signature-note">Signature précédée de la mention manuscrite "Lu et approuvé"</div>
+        </div>
+        <div class="signature-box">
+            <div class="signature-title">Le Directeur de l'Établissement</div>
+            <div class="signature-note">Signature et Cachet</div>
+        </div>
+    </div>
+
+</div><!-- end .page -->
+
+<!-- ======================================================
+     SCRIPTS — logique inchangée, affichage enrichi
+====================================================== -->
+<script>
+const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+const params = new URLSearchParams(window.location.search);
+const id_remuneration = params.get('id_remuneration') || params.get('id');
+const doc_id = params.get('doc_id');
+let currentIdPersonnel = null;
+
+/* ---- formatters ---- */
+function fmtDate(iso) {
+  if (!iso) return '—';
+  const parts = iso.split('T')[0].split('-');
+  if (parts.length !== 3) return iso;
+  return `${parts[2]}/${parts[1]}/${parts[0]}`;
+}
+
+function fmtMAD(val) {
+  const n = parseFloat(val || 0);
+  return n.toLocaleString('fr-MA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' MAD';
+}
+
+function fmtPeriodeStart(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (isNaN(d)) return '—';
+  return `01/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+}
+function fmtPeriodeEnd(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (isNaN(d)) return '—';
+  const lastDay = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+  return `${String(lastDay.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+}
+
+/* ---- populate remuneration data ---- */
+function populateRemun(r) {
+  currentIdPersonnel = r.id_personnel || null;
+
+  const base   = parseFloat(r.salaire_base || 0);
+  const prime  = parseFloat(r.prime || 0);
+  const nbHS   = parseFloat(r.quantite_heures_supp || 0);
+  const pxHS   = parseFloat(r.prix_unitaire_heure || 0);
+  const montHS = parseFloat(r.montant_total_heures_supp || (nbHS * pxHS));
+  const brut   = base + prime + montHS;
+  const cnss   = parseFloat(r.deduction_cnss || 0);
+  const amo    = parseFloat(r.amo || 0);
+  const cimr   = parseFloat(r.cimr || 0);
+  const ir     = parseFloat(r.ir || 0);
+  const imp    = parseFloat(r.salaire_imposable || 0);
+  const net    = parseFloat(r.net_a_payer || 0);
+
+  /* période */
+  document.getElementById('val-periode-debut').textContent = fmtPeriodeStart(r.date_paiement);
+  document.getElementById('val-periode-fin').textContent = fmtPeriodeEnd(r.date_paiement);
+
+  /* info card paie */
+  document.getElementById('val-base-info').textContent  = fmtMAD(base);
+  document.getElementById('val-prime-info').textContent = fmtMAD(prime);
+  document.getElementById('val-nb-hs').textContent      = `${nbHS} h`;
+  document.getElementById('val-prix-hs').textContent    = fmtMAD(pxHS);
+  document.getElementById('val-paiement').textContent   = fmtDate(r.date_paiement);
+
+  /* table gains/retenues */
+  document.getElementById('tbl-base-base').textContent   = fmtMAD(base);
+  document.getElementById('tbl-base-gains').textContent  = fmtMAD(base);
+
+  document.getElementById('tbl-prime-base').textContent  = fmtMAD(prime);
+  document.getElementById('tbl-prime-gains').textContent = fmtMAD(prime);
+
+  document.getElementById('tbl-hs-base').textContent   = `${nbHS} h`;
+  document.getElementById('tbl-hs-taux').textContent   = pxHS > 0 ? fmtMAD(pxHS) + '/h' : '-';
+  document.getElementById('tbl-hs-gains').textContent  = fmtMAD(montHS);
+
+  document.getElementById('tbl-brut-gains').textContent  = fmtMAD(brut);
+  document.getElementById('tbl-cnss-ret').textContent    = fmtMAD(cnss);
+  document.getElementById('tbl-amo-ret').textContent     = fmtMAD(amo);
+  document.getElementById('tbl-cimr-ret').textContent    = fmtMAD(cimr);
+  document.getElementById('tbl-imp-gains').textContent   = fmtMAD(imp);
+  document.getElementById('tbl-ir-ret').textContent      = fmtMAD(ir);
+  document.getElementById('tbl-net-gains').textContent   = fmtMAD(net);
+
+  /* big net à payer */
+  document.getElementById('val-net').textContent = fmtMAD(net);
+
+  /* load extra employee info */
+  if (currentIdPersonnel) {
+    fetch(`/api/personnel/${currentIdPersonnel}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    .then(res => res.ok ? res.json() : null)
+    .then(p => {
+      if (!p) return;
+      document.getElementById('val-nom-complet').textContent  = `${p.nom || ''} ${p.prenom || ''}`.trim() || '—';
+      document.getElementById('val-cin').textContent          = p.cin || '—';
+      document.getElementById('val-num-cnss').textContent     = p.num_cnss || '—';
+      document.getElementById('val-matricule').textContent    = p.id_personnel ? `P-${String(p.id_personnel).padStart(4,'0')}` : '—';
+      document.getElementById('val-embauche').textContent     = fmtDate(p.date_recrutement);
+      document.getElementById('val-fonction').textContent     = p.statut || '—';
+      document.getElementById('val-categorie').textContent    = p.libelle_categorie || '—';
+    })
+    .catch(() => {});
+  }
+
+  /* fallback name from remuneration join */
+  if (r.nom_complet) {
+    document.getElementById('val-nom-complet').textContent = r.nom_complet;
+  }
+}
+
+/* ---- load remuneration ---- */
+if (id_remuneration) {
+  fetch(`/api/remunerations/${id_remuneration}`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
+  .then(res => {
+    if (!res.ok) throw new Error('Erreur de chargement');
+    return res.json();
+  })
+  .then(r => {
+    if (!r) {
+      document.body.innerHTML = "<h2 style='text-align:center;color:red;margin-top:50px;'>Aucune rémunération liée.</h2>";
+      throw new Error('Rémunération non trouvée');
+    }
+    populateRemun(r);
+  })
+  .catch(err => {
+    console.error(err);
+    ipirnetAlert('Impossible de charger les données du bulletin.');
+  });
+}
+
+document.getElementById('val-print-date').textContent = new Date().toLocaleDateString('fr-FR');
+
+/* ---- print with historique ---- */
+function doPrint() { window.print(); }
+</script>
+<script src="/dialogs.js"></script>
+</body>
+</html>
+

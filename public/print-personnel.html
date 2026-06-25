@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script>
+if (!localStorage.getItem('token') && !sessionStorage.getItem('token')) {
+  window.location.href = '/login.html';
+}
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Impression - Personnel</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #e5e5e5;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
+.page {
+    width: 277mm; /* Landscape */
+    margin: auto;
+    background: white;
+    padding: 10mm;
+    box-sizing: border-box;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    position: relative;
+}
+.print-actions {
+    width: 277mm;
+    margin: 0 auto 15px auto;
+    text-align: right;
+}
+.print-btn {
+    padding: 10px 18px;
+    background: #1f4aa8;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: background 0.2s;
+    margin-left: 10px;
+}
+.print-btn:hover {
+    background: #153982;
+}
+.btn-close {
+    background: #e53e3e;
+}
+.btn-close:hover {
+    background: #c53030;
+}
+.header-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 25px;
+}
+.header-table td {
+    border: 1px solid #000;
+    text-align: center;
+    padding: 10px;
+    vertical-align: middle;
+}
+.logo {
+    width: 110px;
+    height: auto;
+}
+.header-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0;
+}
+.header-sub {
+    font-size: 11px;
+    margin: 5px 0 0 0;
+    line-height: 1.4;
+}
+.title-fiche {
+    text-align: center;
+    font-size: 22px;
+    margin: 25px 0;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #000;
+    padding-bottom: 8px;
+}
+table.info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+}
+table.info-table th, table.info-table td {
+    border: 1px solid #000;
+    padding: 6px 8px;
+    font-size: 10px;
+    text-align: left;
+}
+table.info-table th {
+    background: #f7f7f7;
+    font-weight: bold;
+}
+.print-date {
+    margin-top: 30px;
+    font-size: 12px;
+    text-align: right;
+    font-style: italic;
+}
+.signature-area {
+    margin-top: 40px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    page-break-inside: avoid;
+}
+.signature-box {
+    width: 200px;
+    text-align: center;
+}
+.signature-title {
+    font-weight: bold;
+    margin-bottom: 60px;
+}
+.signature-note {
+    font-size: 11px;
+    color: #666;
+    border-top: 1px dashed #ccc;
+    padding-top: 5px;
+}
+.loader {
+    text-align: center;
+    padding: 30px;
+    font-size: 14px;
+}
+@page {
+    size: A4 landscape;
+    margin: 10mm;
+}
+@media print {
+    button,
+    .btn,
+    .print-btn,
+    .no-print {
+        display: none !important;
+    }
+    .print-actions {
+        display: none !important;
+    }
+    body {
+        background: white;
+        padding: 0;
+    }
+    .page {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="print-actions">
+    <button class="print-btn btn-close no-print" onclick="window.close()">Fermer</button>
+    <button class="print-btn no-print" onclick="window.print()">Imprimer la Fiche</button>
+</div>
+
+<div class="page">
+    <!-- HEADER -->
+    <table class="header-table">
+        <tr>
+            <td width="20%">
+                <img src="/assets/logo-ipirnet.png" class="logo" alt="Logo IPIRNET">
+            </td>
+            <td>
+                <h1 class="header-title">GROUPE IPIRNET</h1>
+                <p class="header-sub">
+                    Institut Privé d’Informatique Réseau et Nouvelles Technologies<br>
+                    Autorisé par l’Etat sous N° : 3/03/2/2003
+                </p>
+            </td>
+            <td width="20%">
+                <img src="/assets/Logo-accreditation.png" class="logo" alt="Logo Accréditation">
+            </td>
+        </tr>
+    </table>
+
+    <div class="title-fiche">
+        Liste Globale du Personnel
+    </div>
+
+    <div id="content">
+        <div class="loader">Chargement des données...</div>
+    </div>
+
+    <div class="print-date">
+        Fiche imprimée le <span id="val-print-date">-</span>
+    </div>
+
+    <div class="signature-area">
+        <div class="signature-box">
+            <div class="signature-title">L'Intéressé(e)</div>
+            <div class="signature-note">Signature précédée de la mention manuscrite "Lu et approuvé"</div>
+        </div>
+        <div class="signature-box">
+            <div class="signature-title">Le Directeur de l'Établissement</div>
+            <div class="signature-note">Signature et Cachet</div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('val-print-date').textContent = new Date().toLocaleDateString('fr-FR');
+const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+
+function fmtDate(iso) {
+    if(!iso) return '-';
+    const m = String(iso).match(/(\d{4})-(\d{2})-(\d{2})/);
+    if(!m) return iso;
+    return `${m[3]}/${m[2]}/${m[1]}`;
+}
+
+async function loadData() {
+    try {
+        const res = await fetch('/api/personnel', {
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (!res.ok) throw new Error('Erreur lors du chargement');
+        const data = await res.json();
+        
+        let html = '<table class="info-table"><thead><tr>';
+        html += '<th>Nom & Prénom</th><th>Téléphone</th><th>Email</th><th>Adresse</th><th>CIN</th><th>Date Naissance</th><th>Sexe</th><th>Contrat</th><th>Catégorie</th><th>Statut</th><th>Recrutement</th><th>Sal. Net</th><th>HS</th>';
+        html += '</tr></thead><tbody>';
+        
+        if(data.length === 0) {
+            html += '<tr><td colspan="13" style="text-align:center">Aucun enregistrement</td></tr>';
+        } else {
+            data.forEach(p => {
+                html += `<tr>
+                    <td><strong>${p.nom} ${p.prenom}</strong></td>
+                    <td>${p.telephone || '-'}</td>
+                    <td>${p.email || '-'}</td>
+                    <td>${p.adresse || '-'}</td>
+                    <td>${p.cin || '-'}</td>
+                    <td>${fmtDate(p.date_naissance)}</td>
+                    <td>${p.sexe || '-'}</td>
+                    <td>${p.contrat || '-'}</td>
+                    <td>${p.libelle_categorie || '-'}</td>
+                    <td>${p.statut || '-'}</td>
+                    <td>${fmtDate(p.date_recrutement)}</td>
+                    <td>${p.salaire_base != null ? p.salaire_base + ' MAD' : '-'}</td>
+                    <td>${p.heures_supp || 0} h</td>
+                </tr>`;
+            });
+        }
+        html += '</tbody></table>';
+        
+        document.getElementById('content').innerHTML = html;
+        setTimeout(async () => {
+            
+            window.print();
+        }, 500);
+    } catch(e) {
+        document.getElementById('content').innerHTML = '<div style="color:red; text-align:center;">Erreur : ' + e.message + '</div>';
+    }
+}
+loadData();
+</script>
+</body>
+</html>
+
