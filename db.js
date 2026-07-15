@@ -1,16 +1,19 @@
 // db.js — MySQL connection pool (XAMPP)
-const mysql = require('mysql2/promise');
+const mysql = require("mysql2/promise");
 
 const pool = mysql.createPool({
-  host:     '127.0.0.1',
-  port:     3307,           // XAMPP MariaDB port
-  user:     'root',
-  password: '',             // XAMPP default = empty
-  database: 'gestion_personnel',
-  charset:  'utf8mb4',
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
   waitForConnections: true,
-  connectionLimit:    10,
-  dateStrings:        true, // ← retourne DATE/DATETIME comme "YYYY-MM-DD" (pas objet Date JS)
+  connectionLimit: 10,
+  charset: "utf8mb4",
+  ssl: {
+  rejectUnauthorized: false
+  },
+  dateStrings: true
 });
 
 module.exports = pool;
